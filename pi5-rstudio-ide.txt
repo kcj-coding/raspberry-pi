@@ -1,0 +1,67 @@
+################### raspberry pi 5 overclock #######################################################
+
+sudo nano /boot/firmware/config.txt
+
+arm_freq=3000
+gpu_freq=1000
+over_voltage_delta=50000
+# over_voltage=4 # this was deprecated
+
+force_turbo=1
+
+
+# check gpu speed
+watch -n 1 vcgencmd measure_clock arm
+
+# check cpu speed
+watch -n 1 vcgencmd measure_clock core
+
+# stability/stress test
+sudo apt install stress-ng mesa-utils
+while true; do vcgencmd measure_clock arm; vcgencmd measure_temp; sleep 10; done& stress-ng -c 4 -t 300s
+
+#################### r4pi install of R #############################################################
+
+source /etc/os-release
+curl -O  https://pkgs.r4pi.org/dl/${VERSION_CODENAME}/r4pi-repo-conf_0.0.1-1_all.deb
+sudo dpkg -i  r4pi-repo-conf_0.0.1-1_all.deb
+sudo apt update
+
+sudo apt update
+
+sudo apt upgrade
+
+sudo apt install r4pi
+
+
+################### rstudio ide ####################################################################
+
+# get build from https://dailies.rstudio.com/
+wget https://s3.amazonaws.com/rstudio-ide-build/electron/focal/arm64/rstudio-2024.09.1-394-arm64.deb
+sudo dpkg -i rstudio-2024.09.1-394-arm64.deb
+sudo dpkg --configure -a
+sudo apt install libclang-dev
+sudo apt --fix-broken install
+
+##################### clamav ######################################################################
+
+# install
+sudo apt install clamav
+
+# scan home directory
+clamscan -r /home
+
+# run scan on all files 
+sudo clamscan -r
+
+#####################################################################################################
+
+# linux terminal
+
+# sudo to act as superuser
+
+# clear history of terminal
+history -c
+
+# delete specific lines
+history -d 2-20 # delete lines 2 to 20
