@@ -69,7 +69,7 @@ history -d 2-20 # delete lines 2 to 20
 
 # list files in folder
 ls -lrt
-# /home ls -lrt
+# ls -lrt /home
 
 # run .sh files
 bash \home\file.sh
@@ -82,7 +82,10 @@ chmod -R 777 /home # change directory and all of contents recursively
 
 # check chmod of files
 ls -l
-# /home ls -l
+# ls -l /home
+
+# check chmod of files in directory
+stat -c "%a %n" /home/*
 
 #####################################################################################################
 
@@ -101,3 +104,10 @@ wq:
 
 # close without saving
 :q!
+
+#####################################################################################################
+
+# format drive with 0's
+sudo shred -n 2 -z -v /dev/sda
+
+# cat /dev/zero > /dev/sda
