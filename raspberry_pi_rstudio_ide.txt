@@ -107,7 +107,24 @@ wq:
 
 #####################################################################################################
 
-# format drive with 0's
+# install simple-scan (for printer with scanner)
+sudo apt update
+sudo apt install simple-scan
+
+
+# install Microsoft fonts
+sudo apt install ttf-mscorefonts-installer
+
+
+# install miktex and add-ons
+# https://miktex.org/howto/install-miktex-unx
+
+# or texlive for LaTeX
+sudo apt-get install texlive
+
+#####################################################################################################
+
+# format drive with 0's (drive is e.g. sda)
 sudo shred -n 2 -z -v /dev/sda
 
 # cat /dev/zero > /dev/sda
