@@ -111,16 +111,40 @@ wq:
 sudo apt update
 sudo apt install simple-scan
 
-
 # install Microsoft fonts
 sudo apt install ttf-mscorefonts-installer
-
 
 # install miktex and add-ons
 # https://miktex.org/howto/install-miktex-unx
 
 # or texlive for LaTeX
 sudo apt-get install texlive
+
+## install wine and app
+
+# https://gitlab.winehq.org/wine/wine/-/wikis/Debian-Ubuntu
+
+sudo dpkg --add-architecture i386
+sudo mkdir -pm755 /etc/apt/keyrings
+wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
+sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
+sudo apt update
+sudo apt install --install-recommends winehq-stable
+
+# https://gist.github.com/diegorodrigo90/2be8213f3dab0583446f6cf52d397d30
+
+WINEARCH=win32 WINEPREFIX=/home/$USER/GarminExpress winetricks dotnet472 vcrun2010 corefonts d3dcompiler_47
+WINEARCH=win32 WINEPREFIX=/home/$USER/GarminExpress winetricks win7
+# download e.g. garmin express app and save it in the folder location
+WINEPREFIX=/home/$USER/GarminExpress wine explorer /desktop=garmin,1366x768 /home/$USER/Downloads/GarminExpress.exe
+
+# install deb package
+sudo apt install ./name.deb
+
+# run firefox in incognito mode
+firefox --private-window
+
+# or edit txt file Exec=firefox --private-window %u
 
 #####################################################################################################
 
