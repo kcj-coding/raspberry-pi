@@ -46,13 +46,31 @@ sudo apt --fix-broken install
 ##################### clamav ######################################################################
 
 # install
-sudo apt install clamav
+s#udo apt install clamav
+sudo apt install -y clamav clamav-daemon clamav-freshclam
 
 # scan home directory
 clamscan -r /home
 
 # run scan on all files 
 sudo clamscan -r
+
+# update database
+sudo systemctl stop clamav-freshclam
+sudo freshclam
+sudo systemctl start clamav-freshclam
+
+# install clamav daemon
+sudo apt install clamav-daemon -y
+
+# start service
+sudo systemctl enable clamav-daemon
+sudo systemctl start clamav-daemon
+
+# run
+#clamdscan --fdpass --multiscan
+sudo clamdscan --fdpass --multiscan --recursive --infected /
+
 
 #####################################################################################################
 
@@ -126,6 +144,7 @@ sudo apt-get install texlive
 
 sudo dpkg --add-architecture i386
 sudo mkdir -pm755 /etc/apt/keyrings
+sudo apt install winetricks
 wget -O - https://dl.winehq.org/wine-builds/winehq.key | sudo gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key -
 sudo wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/noble/winehq-noble.sources
 sudo apt update
