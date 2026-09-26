@@ -1,3 +1,15 @@
+################### temporary file removal similar to cleanmgr #####################################
+
+sudo apt clean # remove all cache installation files
+# or sudo apt autoclean
+sudo apt autoremove # remove unused packages and dependencies
+
+sudo journalctl --vacuum-size=100M # restrict total log file size to 100MB
+sudo journalctl --vacuum-time=7d # restrict logs to be no older than 7 days
+
+rm -rf ~/.cache/* # remove user cache
+rm -rf ~/.local/share/Trash/* # clean the trash
+
 ################### raspberry pi 5 overclock #######################################################
 
 sudo nano /boot/firmware/config.txt
