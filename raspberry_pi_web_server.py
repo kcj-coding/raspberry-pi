@@ -1,7 +1,5 @@
 import time
 import socket
-#import network
-import subprocess
 import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from selenium import webdriver
@@ -12,7 +10,7 @@ from selenium.webdriver.common.by import By
 # notes
 # sudo apt install snapd
 # sudo snap refresh chromium
-# sudo snap install chromium
+# sudo snap install chromium  --devmode
 # sudo apt install python3-network
 # sudo apt install python3-selenium
 # get webdriver from https://selenium-python.readthedocs.io/installation.html
@@ -21,6 +19,7 @@ from selenium.webdriver.common.by import By
 # wget 	https://storage.googleapis.com/chrome-for-testing-public/156.0.8078.47/linux-arm64/chromedriver-linux-arm64.zip
 
 ###############################################################################
+
 
 import gc
 gc.collect() # remove anything in memory at initialisation of script
@@ -36,15 +35,6 @@ print(socket.gethostbyname(socket.gethostname()))
 
 # linux terminal: ip addr show
 
-#wlan = network.WLAN(network.STA_IF)
-#wlan.active(True)
-#wlan.connect("SSID","password")
-
-#def connect_to_saved(ssid: str):
-#    subprocess.call(['nmcli', 'c', 'up', ssid])
-#    return is_connected_to(ssid)
-
-#connect_to_saved('ssid')
 ##############################################################################################
 
 start_time = time.time()
@@ -61,7 +51,7 @@ def web_query(item,url,ref):
     opts.add_argument("--no-sandbox")#; // Bypass OS security model
     #service = Service(executable_path='C:\webdrivers\chromedriver.exe')
     service = Service(executable_path='/home/kelvi/Desktop/web_drivers/chromedriver')
-    options = webdriver.ChromeOptions()
+    #options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(service=service, options=opts)
         
     #driver = webdriver.Chrome(options= opts, executable_path = 'C:\webdrivers\chromedriver.exe')
@@ -86,9 +76,8 @@ def web_query(item,url,ref):
 
 ############### html display
 
-def web_page(xyz):
-    #bme = BreakoutBME280(i2c, address=0x76)#bme280.BME280(i2c=i2c)          #BME280 object created
-    html = """<html><head><meta http-equiv="refresh" content="5"><meta name="viewport" content="width=device-width, initial-scale=1">
+def web_page(xyz, timestring):
+    html ="""<html><head><meta http-equiv="refresh" content="5"><meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,"><style>body { text-align: center; font-family: "Helvetica", Arial;}
   table { border-collapse: collapse; width:55%; margin-left:auto; margin-right:auto; }
   th { padding: 12px; background-color: #87034F; color: white; }
@@ -104,100 +93,54 @@ def web_page(xyz):
   <br>
   
   </style></head><body><h4>Table of observed values</h4>
-  <table><tr><th>Item/th><th>Price</th><th>At time</th></tr>"""
+  <table><tr><th>Item</th><th>Price</th><th>At time</th></tr>"""
 
     for entry in range(0,len(xyz)):
-        html += """<tr><td>""" + str(item_names[entry])+"""</td><td><span class="sensor">""" + str(round(prices[entry],3)) +"""</td><td>"""+str(times[entry])+ """</span></td></tr></span></td></tr>"""
+        html += """<tr><td>""" + str(item_names[entry])+"""</td><td><span class="sensor">""" + str(prices[entry]) +"""</td><td>"""+str(times[entry])+ """</span></td></tr></span></td></tr>"""
 
   
-    html +="""</body></html>"""
+    html +="""</table></body></html>"""
     return html
-
-
-#if run_web_page == True:
-    # Wait for connect or fail
-    #wait = 10
-    #while wait > 0:
-    #    if wlan.status() < 0 or wlan.status() >= 3:
-    #        break
-    #    wait -= 1
-    #    print('waiting for connection...')
-    #    time.sleep(1)
-
-
-    # Handle connection error
-    #if wlan.status() != 3:
-    #    raise RuntimeError('wifi connection failed')
-    #else:
-    #    print('connected')
-    #    ip=wlan.ifconfig()[0]
-    #    print('IP: ', ip)
-
-    # Open socket
-    #addr = socket.getaddrinfo('0.0.0.0', 1024)[0][-1]
-    #server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #server.bind(('', 1024))
-    #server.listen(5) # listen for 5 seconds
-    #print('listening on', addr)
-
-
-start_time = time.time()
 
 
 # initialise list with 1 default values, 2nd gets added when running script
 
-
-while True:
-    try:
-        timestring = time.time() - start_time
-        (minutes, seconds) = divmod(timestring, 60)  
-        (hours, minutes) = divmod(minutes, 60)  
-        (days,hours) = divmod(hours, 24)
-        timestring = "Day: "+str(days)+"| hours: "+f"{hours:02f}"+"| minutes: "+f"{minutes:02f}"+"| seconds: "+f"{seconds:02f}"+"|"
-        
-        #web_query(item1,url1, "a-price-whole")
-        #web_query(item1,url1, "a-price-whole")
-        
-        HTML = b"""<!doctype html>
-<html>
-  <head><title>Raspberry Pi</title></head>
-  <body><h1>Hello from my Raspberry Pi!</h1></body>
-</html>
-"""
-        
+while run_web_page == True:
+    try:    
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self):
+                
+                timestring = time.time() - start_time
+                (minutes, seconds) = divmod(timestring, 60)  
+                (hours, minutes) = divmod(minutes, 60)  
+                (days,hours) = divmod(hours, 24)
+                timestring = "Day: "+str(days)+"| hours: "+f"{hours:02f}"+"| minutes: "+f"{minutes:02f}"+"| seconds: "+f"{seconds:02f}"+"|"
+                
+                web_query(item1,url1, "a-price-whole")
+                
+                response1 = web_page(item_names, timestring)
+                html_bytes = bytes(response1, "utf-8")
+                
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header('Refresh', '15')
                 self.end_headers()
-                self.wfile.write(HTML)
-        
+                self.wfile.write(html_bytes)
+                
+           
+        try:
+            server = HTTPServer(("0.0.0.0", 8000), Handler)
+            print("Open http://<your-pi-ip>:8000")
+            server.serve_forever()
+            gc.collect()
+        except KeyboardInterrupt:
+            run_web_page = False
+            gc.collect()
+            print("\nShutting down server safely...")
+            server.shutdown() 
+            server.server_close()
         
 
-        server = HTTPServer(("0.0.0.0", 8000), Handler)
-        print("Open http://<your-pi-ip>:8000")
-        server.serve_forever()
-        
-        ###############################################################
-        if run_web_page == True:
-            #conn, addr = server.accept()
-            #conn.settimeout(3.0)
-            #print('client connected from', addr)
-            #request = conn.recv(1024)
-            #conn.settimeout(None)
-            # HTTP-Request receive
-            #print('Request:', request)              
-            # HTTP-Response send
-            
-            response = web_page(item_names)
-
-            #conn.send('HTTP/1.0 200 OK\r\nContent-type: text/html\r\n\r\n')
-            #conn.sendall(response)
-            #conn.close()
-            gc.collect() # try to free memory
-        
-        
-        
     except OSError as e:
         conn.close()
         print('connection closed')
